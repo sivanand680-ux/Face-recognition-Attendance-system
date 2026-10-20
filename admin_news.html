@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home Portal Management</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body { background:#f4f6fa; }
+        .page-header {
+            background:white;
+            padding:20px 30px;
+            border-radius:14px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom:30px;
+        }
+        .card-box {
+            border-radius:16px;
+            box-shadow:0 8px 20px rgba(0,0,0,0.08);
+        }
+        .preview-img {
+            width:100px;
+            height:60px;
+            object-fit:cover;
+            border-radius:8px;
+        }
+        .badge-portal { background:#2563eb; }
+    </style>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/professional-ui.css') }}?v=wild2">
+</head>
+
+<body>
+<div class="container mt-4">
+
+    <!-- HEADER -->
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="mb-1">
+                <i class="bi bi-house-gear"></i> Home Portal Management
+            </h4>
+            <p class="text-muted mb-0">
+                Manage portal branding, background slides, and animated announcements.
+            </p>
+        </div>
+        <a href="/dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- ================= PORTAL APPEARANCE FORM ================= -->
+    <div class="card card-box p-4 mb-4">
+        <h5 class="mb-3">
+            <i class="bi bi-sliders"></i> Portal Appearance Settings
+        </h5>
+
+        <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="form_type" value="portal_settings">
+
+            <div class="mb-3">
+                <label class="form-label">University Name</label>
+                <input type="text" name="university_name"
+                       class="form-control"
+                       placeholder="Enter University Name"
+                       value="{{ portal.university_name if portal }}">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">University Logo</label>
+                <input type="file" name="logo" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Background Images (Multiple)</label>
+                <input type="file" name="backgrounds" class="form-control" multiple>
+            </div>
+
+            <button class="btn btn-success">
+                <i class="bi bi-save"></i> Update Portal Appearance
+            </button>
+        </form>
+    </div>
+
+    <!-- ================= ANNOUNCEMENT FORM ================= -->
+    <div class="card card-box p-4 mb-4">
+        <h5 class="mb-3">
+            <i class="bi bi-megaphone"></i> Add Portal Announcement
+        </h5>
+
+        <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="form_type" value="portal_announcement">
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Announcement Title</label>
+                    <input type="text" name="title" class="form-control" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Optional Image</label>
+                    <input type="file" name="image" class="form-control">
+                </div>
+
+                <div class="col-12 mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" rows="3" class="form-control"></textarea>
+                </div>
+
+                <div class="col-12">
+                    <button class="btn btn-primary">
+                        <i class="bi bi-upload"></i> Publish to Home Portal
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- ================= EXISTING CONTENT ================= -->
+    <div class="card card-box p-4">
+        <h5 class="mb-3">
+            <i class="bi bi-layout-text-window"></i> Existing Portal Updates
+        </h5>
+
+        <table class="table table-bordered align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Preview</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Published On</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for n in news %}
+                <tr>
+                    <td>
+                        {% if n.image %}
+                        <img src="/static/uploads/{{ n.image }}" class="preview-img">
+                        {% else %}
+                        <span class="badge bg-secondary">No Image</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ n.title }} <span class="badge badge-portal">Portal</span></td>
+                    <td class="text-muted">{{ n.description }}</td>
+                    <td>{{ n.created_at }}</td>
+                    <td class="text-center">
+                        <a href="/delete_news/{{ n.id }}"
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Remove this update?')">
+                            <i class="bi bi-trash"></i> Remove
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">
+                        No portal updates available
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/professional-ui.js') }}?v=wild2"></script>
+</body>
+</html>
+

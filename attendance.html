@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Attendance</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/professional-ui.css') }}?v=wild2">
+</head>
+
+<body class="bg-dark">
+
+<!-- MODAL -->
+<div class="modal fade show" id="attendanceModal" style="display:block;" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-4">
+
+      <div class="modal-body">
+        <i class="bi bi-check-circle-fill text-success fs-1"></i>
+
+        <h4 class="mt-3 text-success">Attendance Marked</h4>
+
+        <p>Welcome <strong>{{ name }}</strong></p>
+
+        <button class="btn btn-primary mt-3" onclick="goDashboard()">
+            Go to Dashboard
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function goDashboard() {
+    window.location.href = "/dashboard";
+}
+</script>
+
+
+<script src="{{ url_for('static', filename='js/professional-ui.js') }}?v=wild2"></script>
+</body>
+</html>

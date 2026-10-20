@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ university_name }} | Attendance Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/professional-ui.css') }}?v=wild2">
+    <style>
+        body.portal-body {
+            overflow-x: hidden;
+            background: #071319 !important;
+            color: #f8fafc !important;
+        }
+        .portal-shell {
+            min-height: 100vh;
+            position: relative;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            isolation: isolate;
+        }
+        .portal-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background: linear-gradient(120deg, #071319, #0f2932 52%, #132f4f);
+        }
+        .portal-slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transform: scale(1.03);
+            transition: opacity 1.2s ease, transform 6s ease;
+            filter: saturate(.92);
+        }
+        .portal-slide.active {
+            opacity: .42;
+            transform: scale(1);
+        }
+        .portal-bg::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(7,19,25,.95), rgba(7,19,25,.72) 48%, rgba(7,19,25,.42));
+        }
+        .portal-nav {
+            width: min(1180px, calc(100% - 36px));
+            margin: 18px auto 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 12px 14px;
+            border: 1px solid rgba(255,255,255,.14);
+            border-radius: 8px;
+            background: rgba(255,255,255,.08);
+            backdrop-filter: blur(18px);
+        }
+        .portal-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+        .portal-logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: rgba(255,255,255,.12);
+        }
+        .portal-brand h5 {
+            margin: 0;
+            color: #fff;
+            overflow-wrap: anywhere;
+        }
+        .portal-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .portal-actions .btn {
+            border-color: rgba(255,255,255,.28) !important;
+            color: #fff !important;
+            background: rgba(255,255,255,.08) !important;
+        }
+        .portal-actions .btn-primary {
+            background: #0d9488 !important;
+            border-color: #0d9488 !important;
+        }
+        .portal-main {
+            width: min(1180px, calc(100% - 36px));
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
+            gap: 30px;
+            align-items: center;
+            padding: 58px 0 42px;
+        }
+        .portal-kicker {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(13,148,136,.16);
+            color: #99f6e4;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: .78rem;
+        }
+        .portal-title {
+            margin: 18px 0 14px;
+            max-width: 760px;
+            color: #fff;
+            font-size: clamp(2.5rem, 6vw, 5.6rem);
+            line-height: .95;
+        }
+        .portal-copy {
+            max-width: 660px;
+            color: #d7e3ea;
+            font-size: 1.08rem;
+            line-height: 1.7;
+        }
+        .portal-panel {
+            border: 1px solid rgba(255,255,255,.16);
+            border-radius: 10px;
+            background: rgba(255,255,255,.1);
+            backdrop-filter: blur(22px);
+            box-shadow: 0 28px 70px rgba(0,0,0,.28);
+            overflow: hidden;
+        }
+        .portal-panel-head {
+            padding: 22px;
+            border-bottom: 1px solid rgba(255,255,255,.12);
+        }
+        .portal-panel-head h4,
+        .portal-panel-head p {
+            color: #fff;
+        }
+        .role-list {
+            display: grid;
+            gap: 1px;
+            background: rgba(255,255,255,.12);
+        }
+        .role-card {
+            display: grid;
+            grid-template-columns: 48px 1fr auto;
+            gap: 14px;
+            align-items: center;
+            padding: 18px 20px;
+            color: #fff;
+            text-decoration: none;
+            background: rgba(7,19,25,.54);
+        }
+        .role-card:hover {
+            background: rgba(13,148,136,.23);
+            color: #fff;
+            transform: none;
+        }
+        .role-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,.12);
+            font-size: 1.3rem;
+        }
+        .news-strip {
+            width: min(1180px, calc(100% - 36px));
+            margin: 0 auto 24px;
+            border: 1px solid rgba(255,255,255,.14);
+            border-radius: 8px;
+            background: rgba(255,255,255,.08);
+            backdrop-filter: blur(18px);
+            overflow: hidden;
+        }
+        .news-item {
+            display: none;
+            align-items: center;
+            gap: 14px;
+            padding: 15px 18px;
+            color: #e5eef4;
+        }
+        .news-item.active {
+            display: flex;
+            animation: portalNews .45s ease both;
+        }
+        .news-label {
+            color: #99f6e4;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        @keyframes portalNews {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 900px) {
+            .portal-main {
+                grid-template-columns: 1fr;
+                padding-top: 38px;
+            }
+            .portal-nav {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+            .portal-actions {
+                justify-content: flex-start;
+            }
+            .role-card {
+                grid-template-columns: 44px 1fr;
+            }
+            .role-card > i {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="portal-body">
+<div class="portal-shell">
+    <div class="portal-bg">
+        {% if backgrounds %}
+            {% for img in backgrounds %}
+            <div class="portal-slide {% if loop.first %}active{% endif %}" style="background-image: url('/static/uploads/{{ img }}');"></div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <header class="portal-nav">
+        <div class="portal-brand">
+            {% if logo %}
+            <img class="portal-logo" src="/static/uploads/{{ logo }}" alt="{{ university_name }} logo">
+            {% else %}
+            <span class="portal-logo d-inline-flex align-items-center justify-content-center"><i class="bi bi-building"></i></span>
+            {% endif %}
+            <div>
+                <h5>{{ university_name }}</h5>
+                <div class="small text-white-50">Attendance and academic access</div>
+            </div>
+        </div>
+        <div class="portal-actions">
+            <a href="/student_login" class="btn btn-sm"><i class="bi bi-mortarboard"></i> Student</a>
+            <a href="/teacher_login" class="btn btn-sm"><i class="bi bi-person-workspace"></i> Teacher</a>
+            <a href="/admin_login" class="btn btn-sm btn-primary"><i class="bi bi-shield-lock"></i> Admin</a>
+        </div>
+    </header>
+
+    <main class="portal-main">
+        <section>
+            <span class="portal-kicker"><i class="bi bi-broadcast-pin"></i> Smart Attendance Portal</span>
+            <h1 class="portal-title">{{ university_name }}</h1>
+            <p class="portal-copy">
+                A focused academic workspace for attendance, teacher coordination, student profiles, and institution updates.
+                Designed for fast daily use with secure role-based access.
+            </p>
+        </section>
+
+        <section class="portal-panel">
+            <div class="portal-panel-head">
+                <h4 class="mb-1">Choose your workspace</h4>
+                <p class="mb-0 text-white-50">Access only what you need, right away.</p>
+            </div>
+            <div class="role-list">
+                <a class="role-card" href="/admin_login">
+                    <span class="role-icon"><i class="bi bi-shield-lock-fill"></i></span>
+                    <span><strong>Admin Console</strong><br><small class="text-white-50">Manage users, portal content, reports</small></span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+                <a class="role-card" href="/teacher_login">
+                    <span class="role-icon"><i class="bi bi-person-video3"></i></span>
+                    <span><strong>Teacher Workspace</strong><br><small class="text-white-50">Take attendance and review classes</small></span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+                <a class="role-card" href="/student_login">
+                    <span class="role-icon"><i class="bi bi-mortarboard-fill"></i></span>
+                    <span><strong>Student Desk</strong><br><small class="text-white-50">Check attendance and leave requests</small></span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <section class="news-strip">
+        {% if news and news|length > 0 %}
+            {% for n in news %}
+            <div class="news-item {% if loop.first %}active{% endif %}">
+                <span class="news-label"><i class="bi bi-megaphone-fill"></i> Update</span>
+                <strong>{{ n.title }}</strong>
+                <span class="text-white-50">{{ n.description }}</span>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="news-item active">
+                <span class="news-label"><i class="bi bi-megaphone-fill"></i> Update</span>
+                <strong>Welcome</strong>
+                <span class="text-white-50">Use the role cards above to enter the portal.</span>
+            </div>
+        {% endif %}
+    </section>
+</div>
+
+<script>
+    const slides = [...document.querySelectorAll(".portal-slide")];
+    let slideIndex = 0;
+    if (slides.length > 1) {
+        setInterval(() => {
+            slides[slideIndex].classList.remove("active");
+            slideIndex = (slideIndex + 1) % slides.length;
+            slides[slideIndex].classList.add("active");
+        }, 5200);
+    }
+
+    const newsItems = [...document.querySelectorAll(".news-item")];
+    let newsIndex = 0;
+    if (newsItems.length > 1) {
+        setInterval(() => {
+            newsItems[newsIndex].classList.remove("active");
+            newsIndex = (newsIndex + 1) % newsItems.length;
+            newsItems[newsIndex].classList.add("active");
+        }, 4200);
+    }
+</script>
+<script src="{{ url_for('static', filename='js/professional-ui.js') }}?v=wild2"></script>
+</body>
+</html>

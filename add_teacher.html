@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Teacher</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/professional-ui.css') }}?v=wild2">
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5" style="max-width:600px;">
+    <div class="card shadow-lg p-4">
+        <h4 class="mb-3">Add Teacher</h4>
+
+        <form method="POST">
+
+            <input name="name" class="form-control mb-2"
+                   placeholder="Teacher Name" required>
+
+            <!-- COURSE -->
+            <select name="course" class="form-control mb-2" required>
+                <option value="">Select Course</option>
+                {% for c in courses %}
+                    <option value="{{ c.course_name }}">{{ c.course_name }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- BATCH -->
+            <select name="batch" class="form-control mb-2" required>
+                <option value="">Select Batch</option>
+                {% for b in batches %}
+                    <option value="{{ b.batch_name }}">{{ b.batch_name }}</option>
+                {% endfor %}
+            </select>
+
+            <input type="password" name="password"
+                   class="form-control mb-3"
+                   placeholder="Login Password" required>
+
+            <button class="btn btn-primary w-100">
+                Create Teacher Account
+            </button>
+
+        </form>
+    </div>
+</div>
+
+<!-- ================= SUCCESS MODAL ================= -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-4">
+
+      <div class="modal-body">
+        <i class="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
+
+        <h5 class="mt-2">Teacher Account Created Successfully</h5>
+
+        <p class="text-muted mt-2">
+          The teacher account has been created and is now active.
+        </p>
+
+        <div class="alert alert-success fw-bold">
+          Teacher ID: {{ session.get("new_teacher_id") }}
+        </div>
+
+       <div class="d-flex justify-content-center gap-2">
+    <a href="/dashboard" class="btn btn-primary">
+        Go to Admin Dashboard
+    </a>
+    <button class="btn btn-outline-secondary" data-bs-dismiss="modal">
+        Add Another Teacher
+    </button>
+</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Auto show modal AFTER DOM is ready -->
+{% if session.get("teacher_created") %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const modalEl = document.getElementById("successModal");
+        if (modalEl) {
+            const successModal = new bootstrap.Modal(modalEl);
+            successModal.show();
+        }
+    });
+</script>
+{% endif %}
+
+
+<script src="{{ url_for('static', filename='js/professional-ui.js') }}?v=wild2"></script>
+</body>
+</html>
+

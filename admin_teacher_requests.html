@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Requests</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f4f7fb;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        .page-box {
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+        .request-card {
+            border: 0;
+            border-radius: 16px;
+            box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+        }
+
+        .thumb {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+    </style>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/professional-ui.css') }}?v=wild2">
+</head>
+<body>
+
+<div class="container page-box">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0">Teacher Registration Requests</h3>
+        <a href="/dashboard" class="btn btn-outline-dark">Back to Dashboard</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="row g-4">
+        {% for r in requests_data %}
+        <div class="col-lg-6">
+            <div class="card request-card p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="mb-1">{{ r.name }}</h5>
+                        <div class="text-muted small">{{ r.email }}</div>
+                    </div>
+                    <span class="badge {% if r.status == 'pending' %}bg-warning{% elif r.status == 'approved' %}bg-success{% else %}bg-danger{% endif %}">
+                        {{ r.status|title }}
+                    </span>
+                </div>
+
+                <div class="row g-2 small mb-3">
+                    <div class="col-md-6"><strong>Phone:</strong> {{ r.phone }}</div>
+                    <div class="col-md-6"><strong>Qualification:</strong> {{ r.qualification }}</div>
+                    <div class="col-md-6"><strong>Specialization:</strong> {{ r.specialization or 'N/A' }}</div>
+                    <div class="col-md-6"><strong>Experience:</strong> {{ r.experience_years }} years</div>
+                    <div class="col-md-6"><strong>Course:</strong> {{ r.course }}</div>
+                    <div class="col-md-6"><strong>Batch:</strong> {{ r.batch }}</div>
+                </div>
+
+                <div class="d-flex gap-3 align-items-center mb-3">
+                    {% if r.photo %}
+                    <img src="{{ url_for('static', filename='uploads/' + r.photo) }}" class="thumb" alt="Photo">
+                    {% endif %}
+
+                    {% if r.document_file %}
+                    <a href="{{ url_for('static', filename='uploads/' + r.document_file) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                        View Document
+                    </a>
+                    {% endif %}
+                </div>
+
+                {% if r.status == 'approved' and r.generated_teacher_id %}
+                <div class="alert alert-success py-2">
+                    <strong>Generated Teacher ID:</strong> {{ r.generated_teacher_id }}
+                </div>
+                {% endif %}
+
+                {% if r.status == 'rejected' %}
+                <div class="alert alert-danger py-2">
+                    <strong>Admin Remark:</strong> {{ r.admin_remark or 'No remark provided' }}
+                </div>
+                {% endif %}
+
+                {% if r.status == 'pending' %}
+                <div class="d-flex flex-wrap gap-2">
+                    <form method="POST" action="/approve_teacher_request/{{ r.id }}">
+                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                    </form>
+
+                    <form method="POST" action="/reject_teacher_request/{{ r.id }}" class="d-flex gap-2">
+                        <input type="text" name="admin_remark" class="form-control form-control-sm" placeholder="Reject reason">
+                        <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">No teacher requests found.</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+<script src="{{ url_for('static', filename='js/professional-ui.js') }}?v=wild2"></script>
+</body>
+</html>
+
